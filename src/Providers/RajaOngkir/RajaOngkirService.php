@@ -1,6 +1,6 @@
 <?php
 
-namespace Bendt\Providers\RajaOngkir;
+namespace Bendt\Courier\Providers\RajaOngkir;
 
 use GuzzleHttp\Client;
 
