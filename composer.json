@@ -1,0 +1,34 @@
+{
+  "name": "bendt/courier",
+  "homepage": "https://bendt.io",
+  "license": "MIT",
+  "description": "Helper Integrator with Indonesian Courier Services",
+  "type": "laravel",
+  "authors": [
+    {
+      "name": "Bendt Indonesia",
+      "email": "contact@bendt.io",
+      "homepage": "https://bendt.io"
+    },
+    {
+      "name": "Powered by HUPERCLOUD",
+      "email": "huperseo@gmail.com",
+      "homepage": "https://www.hupercloud.com"
+    }
+  ],
+  "require": {
+     "guzzlehttp/guzzle": "^7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bendt\\Courier\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Bendt\\Courier\\CourierServiceProvider"
+      ]
+    }
+  }
+}
