@@ -16,6 +16,10 @@ class CourierServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/config/bendt-courier.php' => config_path('bendt-courier.php'),
         ], 'config');
+
+        if(config('bendt-courier.routes_enabled')) {
+            require __DIR__ . '/Routes/web.php';
+        }
     }
 
     /**

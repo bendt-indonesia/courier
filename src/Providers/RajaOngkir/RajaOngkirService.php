@@ -2,13 +2,16 @@
 
 namespace Bendt\Courier\Providers\RajaOngkir;
 
+use Bendt\Courier\Provider;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Cache;
 
 class RajaOngkirService
 {
 
     protected $BASE_URL = '';
     protected $API_KEY = '';
+    protected $CACHE_KEY = '';
     protected $options = [];
     protected $couriers = [];
     protected $intCouriers = [];
@@ -29,20 +32,45 @@ class RajaOngkirService
         ];
 
         $this->couriers = implode(',',config('bendt-courier.couriers',['jne']));
+        $this->CACHE_KEY = Provider::RAJA.config('bendt-courier.cache.keys');
+    }
+
+    public function checkCache($prefix = '', $postfix = '') {
+
+        $data = Cache::get($prefix.$this->CACHE_KEY.$postfix);
+        if(is_null($data)) {
+            return false;
+        }
+        return $data;
+    }
+
+    public function putCache($prefix = '', $postfix = '', $value) {
+        $timeout = config('bendt-courier.cache.timeout',3600);
+        Cache::put($prefix.$this->CACHE_KEY.$postfix, $value, $timeout);
     }
 
     public function getProvinces($id = null)
     {
+        $cache = $this->checkCache('province',$id);
+        if($cache) return $cache;
+
         $this->options['query'] = ['id' => $id];
 
         $client =  new Client();
         $res = $client->request('GET', 'province', $this->options);
 
-        return $this->transformResponse($res);
+        $data = $this->transformResponse($res);
+        $this->putCache('province',$id, $data);
+
+        return $data;
     }
 
     public function getCities($province_id = null, $city_id = null)
     {
+        $postfix = $province_id.'-'.$city_id;
+        $cache = $this->checkCache('city',$postfix);
+        if($cache) return $cache;
+
         $this->options['query'] = [
             'id' => $city_id,
             'province' => $province_id,
@@ -52,7 +80,10 @@ class RajaOngkirService
         $client =  new Client();
         $res = $client->request('GET', 'city', $this->options);
 
-        return $this->transformResponse($res);
+        $data = $this->transformResponse($res);
+        $this->putCache('city', $postfix, $data);
+
+        return $data;
     }
 
     public function getDeliveryCosts($data)
@@ -120,6 +151,27 @@ class RajaOngkirService
         } catch (\Exception $exception) {
 
         }
+    }
+
+    public function findCostByCourierAndService($deliveryCosts, $courierCode, $serviceCode) {
+        foreach ($deliveryCosts as $courier) {
+            if($courier->code === $courierCode) {
+                foreach ($courier->costs as $service) {
+                    if($service->service === $serviceCode) {
+                        return [
+                            'courier' => $courier->name,
+                            'courier_code' => $courier->code,
+                            'service' => $service->service,
+                            'service_description' => $service->description,
+                            'etd' => $service->cost[0]->etd,
+                            'value' => $service->cost[0]->value,
+                        ];
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     protected function transformResponse($res)
