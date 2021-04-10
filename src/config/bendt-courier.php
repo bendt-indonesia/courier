@@ -24,7 +24,7 @@ return [
     'provider' => Provider::RAJA, // Listed on Bendt\Courier\Provider
     'providers' => [
         //https://rajaongkir.com/dokumentasi
-        'raja_ongkir' => [
+        Provider::RAJA => [
             'api_key' => '',
             'base_api' => 'https://pro.rajaongkir.com/api/',
             'default_sender_city_id' => 155, // Jakarta Barat
