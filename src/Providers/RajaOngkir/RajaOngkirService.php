@@ -181,7 +181,11 @@ class RajaOngkirService
 
         $status = $body->rajaongkir->status;
         if($status->code == 200) {
-            return $body->rajaongkir->results;
+            if (isset($body->rajaongkir->results)) {
+                return $body->rajaongkir->results;
+            } else if (isset($body->rajaongkir->result)) {
+                return $body->rajaongkir->result;
+            }
         }
         else {
             throw new \Exception($status->description);

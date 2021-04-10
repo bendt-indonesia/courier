@@ -18,6 +18,9 @@ return [
     'couriers' => [
         Couriers::SICEPAT
     ],
+    'filters' => [
+        Couriers::SICEPAT => ["BEST","REG"]
+    ],
     'provider' => Provider::RAJA, // Listed on Bendt\Courier\Provider
     'providers' => [
         //https://rajaongkir.com/dokumentasi

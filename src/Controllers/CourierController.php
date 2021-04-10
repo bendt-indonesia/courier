@@ -30,10 +30,27 @@ class CourierController
             $input['destination'] = $input['destination_id'];
 
             $service = new RajaOngkirService();
-            return $service->getDeliveryCosts($input);
+            $results = $service->getDeliveryCosts($input);
+            return $this->filterServices($results);
         } catch (\Exception $e) {
             abt_custom('BC006',$e->getMessage());
             return back();
         }
+    }
+
+    public function filterServices($shippingFeesData) {
+        $filters = config('bendt-courier.filters',[]);
+
+        foreach ($shippingFeesData as $courier) {
+            if(isset($filters[$courier->code]) && count($filters[$courier->code]) > 0) {
+                foreach ($courier->costs as $idx=>$cost) {
+                    if(!in_array($cost->service, $filters[$courier->code])) {
+                        unset($courier->cost[$idx]);
+                    }
+                }
+            }
+        }
+
+        return $shippingFeesData;
     }
 }
