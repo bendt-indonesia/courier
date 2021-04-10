@@ -132,7 +132,7 @@ class RajaOngkirService
         }
     }
 
-    public function getDeliveryStatus($receipt_no)
+    public function getDeliveryStatus($data)
     {
         try {
 
