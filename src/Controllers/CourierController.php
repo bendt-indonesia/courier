@@ -45,7 +45,7 @@ class CourierController
             if(isset($filters[$courier->code]) && count($filters[$courier->code]) > 0) {
                 foreach ($courier->costs as $idx=>$cost) {
                     if(!in_array($cost->service, $filters[$courier->code])) {
-                        unset($courier->cost[$idx]);
+                        unset($courier->costs[$idx]);
                     }
                 }
             }
