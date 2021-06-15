@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Bendt\Courier\Providers\RajaOngkir\RajaOngkirService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Bendt\Courier\Services\BendtCourierService;
 
 class CourierController
 {
@@ -21,36 +22,12 @@ class CourierController
                 abt_custom('BC005','Validation failed');
             }
 
-            $input = $request->all();
-            if(!isset($input['destination_type'])) {
-                $input['destinationType'] = 'city';
-            } else {
-                $input['destinationType'] = $input['destination_type'];
-            }
-            $input['destination'] = $input['destination_id'];
+            $data = $request->all();
 
-            $service = new RajaOngkirService();
-            $results = $service->getDeliveryCosts($input);
-            return $this->filterServices($results);
+            return BendtCourierService::getFilteredDeliveryCost($data);
         } catch (\Exception $e) {
             abt_custom('BC006',$e->getMessage());
             return back();
         }
-    }
-
-    public function filterServices($shippingFeesData) {
-        $filters = config('bendt-courier.filters',[]);
-
-        foreach ($shippingFeesData as $courier) {
-            if(isset($filters[$courier->code]) && count($filters[$courier->code]) > 0) {
-                foreach ($courier->costs as $idx=>$cost) {
-                    if(!in_array($cost->service, $filters[$courier->code])) {
-                        unset($courier->costs[$idx]);
-                    }
-                }
-            }
-        }
-
-        return $shippingFeesData;
     }
 }
