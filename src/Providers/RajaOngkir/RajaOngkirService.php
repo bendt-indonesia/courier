@@ -31,7 +31,7 @@ class RajaOngkirService
             'base_uri' => $this->BASE_API
         ];
 
-        $this->couriers = implode(',',config('bendt-courier.couriers',['jne']));
+        $this->couriers = implode(':',config('bendt-courier.couriers',['jne']));
         $this->CACHE_KEY = Provider::RAJA.config('bendt-courier.cache.keys');
     }
 
