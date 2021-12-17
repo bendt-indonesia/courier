@@ -10,6 +10,7 @@ class BendtCourierService
 {
     //Required: destination_id,
     /*
+     * Returned array from getFilteredDeliveryCosts functions
     $courierOptionsExample = [
         [
             'code' => 'jne',
@@ -31,12 +32,31 @@ class BendtCourierService
     ];
 
     */
-    public static function findDeliveryCost($data, $courierOptions = [])
+
+    // Required courier, service
+    public static function findDeliveryCost($data)
     {
-        $data['destination'] = $data['destination_id'];
-        $service = new RajaOngkirService();
-        $results = $service->getDeliveryCosts($data);
-        return self::filterServices($results);
+        $couriersAvailable = self::getFilteredDeliveryCosts($data);
+
+        foreach ($couriersAvailable as $courier) {
+            if(strtolower($courier->code) === strtolower($data['courier'])) {
+                foreach ($courier->costs as $cost) {
+                    if(strtolower($cost->service) === strtolower($data['service'])) {
+                        return [
+                            'courier_code' => $courier->code,
+                            'courier_name' => $courier->name,
+                            'courier_service' => $cost->service,
+                            'courier_service_description' => $cost->description,
+                            'courier_cost' => isset($cost->cost[0]->value) ? $cost->cost[0]->value : 0,
+                            'courier_etd' =>  isset($cost->cost[0]->etd) ? $cost->cost[0]->etd : '-',
+                            'courier_note' =>  isset($cost->cost[0]->note) ? $cost->cost[0]->note : '',
+                        ];
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     //Backward Compatibility, renamed function name with s letter
