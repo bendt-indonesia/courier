@@ -44,9 +44,27 @@ class RajaOngkirService
         return $data;
     }
 
+    public function checkCacheDeliveryCosts($options) {
+        $weight = round($options['destination'], 2);
+        $key = $this->CACHE_KEY.'|'.$options['origin'].'|'.$options['destination'].'|'.$weight;
+        $data = Cache::get($key);
+        if(is_null($data)) {
+            return false;
+        }
+        return $data;
+    }
+
     public function putCache($prefix = '', $postfix = '', $value) {
         $timeout = config('bendt-courier.cache.timeout',3600);
         Cache::put($prefix.$this->CACHE_KEY.$postfix, $value, $timeout);
+    }
+
+
+    public function putCacheDeliveryCosts($options, $value) {
+        $weight = round($options['destination'], 2);
+        $key = $this->CACHE_KEY.'|'.$options['origin'].'|'.$options['destination'].'|'.$weight;
+        $timeout = config('bendt-courier.cache.timeout',3600);
+        Cache::put($key, $value, $timeout);
     }
 
     public function getProvinces($id = null)
@@ -86,14 +104,23 @@ class RajaOngkirService
         return $data;
     }
 
+
+    //destination, destinationType, origin, originType
     public function getDeliveryCosts($data)
     {
         try {
+
+            if(!isset($data['destinationType'])) $data['destinationType'] = 'city';
+            if(!isset($data['originType'])) $data['originType'] = 'city';
+            if(!isset($data['origin'])) $data['origin'] = config('bendt-courier.providers.'.Provider::RAJA.'.default_sender_city_id',155);
+
             //Set Active Courier
             $data['courier'] = $this->couriers;
 
-            if(!isset($data['originType'])) $data['originType'] = 'city';
-            if(!isset($data['origin'])) $data['origin'] = config('bendt-courier.providers.'.Provider::RAJA.'.default_sender_city_id',155);
+            $cache = $this->checkCacheDeliveryCosts($data);
+            if($cache) {
+                return $cache;
+            }
 
             // Create request options
             $this->options['headers']['content-type'] = 'application/x-www-form-urlencoded';
@@ -103,7 +130,10 @@ class RajaOngkirService
             $client =  new Client();
             $res = $client->request('POST', 'cost', $this->options);
 
-            return $this->transformResponse($res);
+            $transformed = $this->transformResponse($res);
+            $this->putCacheDeliveryCosts($data, $transformed);
+
+            return $transformed;
         } catch (\Exception $exception) {
 
         }

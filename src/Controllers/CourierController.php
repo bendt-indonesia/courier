@@ -24,7 +24,7 @@ class CourierController
 
             $data = $request->all();
 
-            return BendtCourierService::getFilteredDeliveryCost($data);
+            return BendtCourierService::getFilteredDeliveryCosts($data);
         } catch (\Exception $e) {
             abt_custom('BC006',$e->getMessage());
             return back();
