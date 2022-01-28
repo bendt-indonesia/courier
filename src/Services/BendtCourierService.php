@@ -80,6 +80,8 @@ class BendtCourierService
     public static function filterServices($shippingFeesData) {
         $filters = config('bendt-courier.filters',[]);
 
+        if(!$shippingFeesData || count($shippingFeesData) === 0) return [];
+
         foreach ($shippingFeesData as $courier) {
             if(isset($filters[$courier->code]) && count($filters[$courier->code]) > 0) {
                 foreach ($courier->costs as $idx=>$cost) {
