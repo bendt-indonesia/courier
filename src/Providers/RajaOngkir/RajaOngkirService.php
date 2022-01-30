@@ -160,9 +160,6 @@ class RajaOngkirService
 
     public function getDeliveryStatus($data)
     {
-        //Set Active Courier
-        $data['courier'] = $this->couriers;
-
         // Create request options
         $this->options['headers']['content-type'] = 'application/x-www-form-urlencoded';
         $this->options['form_params'] = $data;
