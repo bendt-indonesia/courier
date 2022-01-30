@@ -10,7 +10,6 @@ class Couriers
     const ANTERAJA = 'anteraja';
     const IDE = 'ide';
     const DSE = 'dse';
-    const EXPEDITO = 'expedito';
     const FIRST = 'first';
     const JET = 'jet';
     const JNE = 'jne';
@@ -34,7 +33,6 @@ class Couriers
     public static $courierLabel = [
         self::ANTERAJA => 'ANTERAJA',
         self::DSE => '21 Express',
-        self::EXPEDITO => 'Expedito',
         self::FIRST => 'First Logistics',
         self::IDE => 'ID Express',
         self::IDL => 'IDL Cargo',
@@ -67,11 +65,6 @@ class Couriers
             'checkFee' => 1,
             'printReceipt' => 1,
             'internationalShipping' => 0,
-        ],
-        self::EXPEDITO => [
-            'checkFee' => 1,
-            'printReceipt' => 0,
-            'internationalShipping' => 1,
         ],
         self::FIRST => [
             'checkFee' => 1,
