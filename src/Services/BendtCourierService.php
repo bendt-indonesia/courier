@@ -79,14 +79,18 @@ class BendtCourierService
     //Memunculkan kurir service yang di filter oleh config bendt-courier.filters
     public static function filterServices($shippingFeesData) {
         $filters = config('bendt-courier.filters',[]);
+        $percentage = config('bendt-courier.markup_percentage',0);
 
         if(!$shippingFeesData || count($shippingFeesData) === 0) return [];
 
-        foreach ($shippingFeesData as $courier) {
+        foreach ($shippingFeesData as $cidx => $courier) {
             if(isset($filters[$courier->code]) && count($filters[$courier->code]) > 0) {
                 foreach ($courier->costs as $idx=>$cost) {
                     if(!in_array($cost->service, $filters[$courier->code])) {
                         unset($courier->costs[$idx]);
+                    } else if ((float)$percentage > 0) {
+                        $shippingFeesData[$cidx]->cost[$idx]->value =
+                            $shippingFeesData[$cidx]->cost[$idx]->value = $shippingFeesData[$cidx]->cost[$idx]->value * (100+((float)$percentage)) / 100;
                     }
                 }
             }

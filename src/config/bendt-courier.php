@@ -31,4 +31,5 @@ return [
         ]
     ],
     'routes_enabled' => true,
+    'markup_percentage' => 0,
 ];

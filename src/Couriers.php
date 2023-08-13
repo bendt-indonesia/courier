@@ -9,26 +9,28 @@ class Couriers
 
     const ANTERAJA = 'anteraja';
     const IDE = 'ide';
-    const DSE = 'dse';
-    const FIRST = 'first';
-    const JET = 'jet';
     const JNE = 'jne';
     const JNT = 'jnt';
-    const IDL = 'idl';
     const LION = 'lion';
     const NCS = 'ncs';
-    const NINJA = 'ninja';
-    const PAHALA = 'pahala';
-    const PANDU = 'pandu';
     const POS = 'pos';
     const REX = 'rex';
     const RPX = 'rpx';
     const SAP = 'sap';
     const SICEPAT = 'sicepat';
     const SENTRAL = 'sentral';
-    const STAR = 'star';
     const TIKI = 'tiki';
     const WAHANA = 'wahana';
+
+    //Last Check 30 Jan 2022 - Returned empty result
+    const DSE = 'dse'; //empty
+    const JET = 'jet'; //empty
+    const FIRST = 'first'; //empty
+    const IDL = 'idl'; //empty
+    const NINJA = 'ninja'; //empty
+    const PAHALA = 'pahala'; //empty
+    const PANDU = 'pandu'; //empty
+    const STAR = 'star'; //empty
 
     public static $courierLabel = [
         self::ANTERAJA => 'ANTERAJA',
