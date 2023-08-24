@@ -89,8 +89,9 @@ class BendtCourierService
                     if(!in_array($cost->service, $filters[$courier->code])) {
                         unset($courier->costs[$idx]);
                     } else if ((float)$percentage > 0) {
-                        $shippingFeesData[$cidx]->cost[$idx]->value =
-                            $shippingFeesData[$cidx]->cost[$idx]->value = $shippingFeesData[$cidx]->cost[$idx]->value * (100+((float)$percentage)) / 100;
+                        foreach($shippingFeesData[$cidx]->costs[$idx]->cost as $zidx => $c) {
+                            $shippingFeesData[$cidx]->costs[$idx]->cost[$zidx]->value = $shippingFeesData[$cidx]->costs[$idx]->cost[$zidx]->value * (100+((float)$percentage)) / 100;
+                        }
                     }
                 }
             }
