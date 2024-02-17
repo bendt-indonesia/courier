@@ -16,10 +16,16 @@ return [
         'timeout' => 3600, //seconds
     ],
     'couriers' => [
-        Couriers::SICEPAT
+        Couriers::SICEPAT,
     ],
     'filters' => [
-        Couriers::SICEPAT => ["BEST","REG"]
+        Couriers::SICEPAT => ["BEST","REG"],
+    ],
+    'insurance_fee' => [
+        Couriers::SICEPAT => [
+            "BEST" => 0,
+            "REG" => 0,
+        ],
     ],
     'provider' => Provider::RAJA, // Listed on Bendt\Courier\Provider
     'providers' => [

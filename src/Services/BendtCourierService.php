@@ -72,7 +72,8 @@ class BendtCourierService
         $data['destination'] = $data['destination_id'];
         $service = new RajaOngkirService();
         $results = $service->getDeliveryCosts($data);
-        return self::filterServices($results);
+        $filtered = self::filterServices($results);
+        return self::addInsuranceFee($filtered);
     }
 
     //Filters returned data, with config exceptions
@@ -86,6 +87,28 @@ class BendtCourierService
                 foreach ($courier->costs as $idx=>$cost) {
                     if(!in_array($cost->service, $filters[$courier->code])) {
                         unset($courier->costs[$idx]);
+                    }
+                }
+            }
+        }
+
+        return $shippingFeesData;
+    }
+
+    //Filters returned data, with config exceptions
+    //Memunculkan kurir service yang di filter oleh config bendt-courier.filters
+    public static function addInsuranceFee($shippingFeesData) {
+        $insurances = config('bendt-courier.insurance_fee',[]);
+        if(count($insurances) === 0) return $shippingFeesData;
+
+        foreach ($shippingFeesData as $cidx => $courier) {
+            if(isset($insurances[$courier->code]) && count($insurances[$courier->code]) > 0) {
+                foreach ($courier->costs as $idx => $cost) {
+                    $serviceCode = $cost->service;
+                    if(isset($insurances[$courier->code][$serviceCode])) {
+                        foreach ($shippingFeesData[$cidx]->costs[$idx]->cost as $zidx => $c) {
+                            $shippingFeesData[$cidx]->costs[$idx]->cost[$zidx]->value = $shippingFeesData[$cidx]->costs[$idx]->cost[$zidx]->value + $insurances[$courier->code][$serviceCode];
+                        }
                     }
                 }
             }
