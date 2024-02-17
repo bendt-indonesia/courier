@@ -216,7 +216,7 @@ class RajaOngkirService
         $percentage = config('bendt-courier.markup_percentage',0);
         if((int)$percentage <= 0) return $shippingFeesData;
         foreach ($shippingFeesData as $cidx => $courier) {
-            foreach ($courier->costs as $idx => $cost) {
+            foreach ($shippingFeesData[$cidx]->costs as $idx => $cost) {
                 foreach ($shippingFeesData[$cidx]->costs[$idx]->cost as $zidx => $c) {
                     $shippingFeesData[$cidx]->costs[$idx]->cost[$zidx]->value = $shippingFeesData[$cidx]->costs[$idx]->cost[$zidx]->value * (100 + ((float)$percentage)) / 100;
                 }
