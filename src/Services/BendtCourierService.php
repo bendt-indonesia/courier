@@ -103,11 +103,11 @@ class BendtCourierService
 
         foreach ($shippingFeesData as $cidx => $courier) {
             if(isset($insurances[$courier->code]) && count($insurances[$courier->code]) > 0) {
-                foreach ($courier->costs as $idx => $cost) {
-                    $serviceCode = $cost->service;
+                foreach ($courier['costs'] as $idx => $service) {
+                    $serviceCode = $service['service'];
                     if(isset($insurances[$courier->code][$serviceCode])) {
-                        foreach ($cost->cost as $zidx => $c) {
-                            $shippingFeesData[$cidx]->costs[$idx]->cost[$zidx]->value = $c->value + $insurances[$courier->code][$serviceCode];
+                        foreach ($service['cost'] as $zidx => $c) {
+                            $shippingFeesData[$cidx]['costs'][$idx]['cost'][$zidx]['value'] = $c['value'] + $insurances[$courier->code][$serviceCode];
                         }
                     }
                 }
