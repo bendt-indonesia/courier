@@ -133,7 +133,7 @@ class RajaOngkirService
         $client = new Client();
         $res = $client->request('POST', 'cost', $this->options);
 
-        $transformed = $this->transformResponse($res);
+        $transformed = $this->transformCostResponse($res);
         $this->putCacheDeliveryCosts($data, $transformed);
 
         return $transformed;
@@ -155,7 +155,7 @@ class RajaOngkirService
         $client = new Client();
         $res = $client->request('POST', 'cost', $this->options);
 
-        return $this->transformResponse($res);
+        return $this->transformCostResponse($res);
     }
 
     public function getDeliveryStatus($data)
@@ -197,8 +197,22 @@ class RajaOngkirService
     {
         // Retrieve Body From response and convert to Object
         $body = json_decode((string)$res->getBody());
+        $status = $body->rajaongkir->status;
+        if ($status->code == 200) {
+            if (isset($body->rajaongkir->results)) {
+                return $body->rajaongkir->results;
+            } else if (isset($body->rajaongkir->result)) {
+                return $body->rajaongkir->result;
+            }
+        } else {
+            throw new \Exception($status->description);
+        }
+    }
 
-        $percentage = config('bendt-courier.markup_percentage',0);
+    protected function transformCostResponse($res)
+    {
+        // Retrieve Body From response and convert to Object
+        $body = json_decode((string)$res->getBody());
         $status = $body->rajaongkir->status;
         if ($status->code == 200) {
             if (isset($body->rajaongkir->results)) {
@@ -216,9 +230,9 @@ class RajaOngkirService
         $percentage = config('bendt-courier.markup_percentage',0);
         if((int)$percentage <= 0) return $shippingFeesData;
         foreach ($shippingFeesData as $cidx => $courier) {
-            foreach ($courier['costs'] as $idx => $service) {
-                foreach ($service['cost'] as $zidx => $c) {
-                    $shippingFeesData[$cidx]['costs'][$idx]['cost'][$zidx]['value'] = $c['value'] * (100 + ((float)$percentage)) / 100;
+            foreach ($shippingFeesData[$cidx]->costs as $idx => $cost) {
+                foreach ($shippingFeesData[$cidx]->costs[$idx]->cost as $zidx => $c) {
+                    $shippingFeesData[$cidx]->costs[$idx]->cost[$zidx]->value = $shippingFeesData[$cidx]->costs[$idx]->cost[$zidx]->value * (100 + ((float)$percentage)) / 100;
                 }
             }
         }
